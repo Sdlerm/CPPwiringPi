@@ -18,3 +18,7 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/02_button/CMakeLists.txt")
 	add_subdirectory(02_button)
 endif()
 
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/03_buttonled/CMakeLists.txt")
+	add_subdirectory(03_buttonled)
+endif()
+
