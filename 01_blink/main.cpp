@@ -2,13 +2,22 @@
 #include <iostream>
 
 constexpr int LED = 17;
-
 void flash(int ms)
 {
     digitalWrite(LED,HIGH);
     delay(ms);
     digitalWrite(LED,LOW);
     delay(200);
+}
+
+void detection(double msm)
+{
+    for (int i=0;i<5;i++)
+    {
+        std::cout << "Flashing delay: " << msm << " ms\n";
+        flash(msm);
+        delay(1000);
+    }
 }
 
 void dot()  
@@ -41,21 +50,46 @@ int main()
 
     pinMode(LED,OUTPUT);
 
-    for (int i=5;i>0;i--) 
-    {
-        sos();
-    }
-    
+    //for (int i=5;i>0;i--) 
+   // {
+   //     sos();
+   // }
 
-    /*
-    for (int i=0;i<10;i++)
+   //Test for different delay times 
+   /*detection(1000);
+   delay(1000);
+   detection(500);
+   delay(1000);
+   detection(200);
+   delay(1000);
+   detection(100);
+   delay(1000);
+   detection(50);
+   delay(1000);
+   detection(25);
+   delay(1000);
+   detection(10);
+   delay(1000);
+   detection(5);
+   delay(1000);
+   detection(1);
+   delay(1000); 
+   detection(1);
+   delay(1000);
+   detection(0.8);
+   delay(1000); 
+   detection(0.6);
+   delay(1000);
+   detection(0.1);
+   delay(1000);
+    */
+
+    
+    while (true)
     {
-        // LED pin stays HIGH unit you change it;nothing auto-releases it at scope end
         digitalWrite(LED,HIGH);
-        delay(500);
         digitalWrite(LED,LOW);
-        delay(500);
     }
-        */
+        
     return 0;
 }
