@@ -1,4 +1,5 @@
 #include <wiringPi.h>
+#include <iostream>
 using namespace std;
 
 constexpr int BTN = 2;
@@ -25,6 +26,7 @@ int main()
         {
             led_on = !led_on; //TOGGLE
             digitalWrite(LED,(led_on ? HIGH:LOW));
+            cout << "LED " << (led_on ? "on" : "off") << "\n";
         }
         prev = now;
         delay(5);
