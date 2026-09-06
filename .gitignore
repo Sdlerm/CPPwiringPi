@@ -1,0 +1,23 @@
+# CMake build output
+out/
+build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeUserPresets.json
+
+# Compiled binaries and objects
+/main
+*.o
+*.a
+*.so
+*.out
+
+# LibreOffice lock files
+.~lock.*#
+
+# Editor / OS junk
+.vscode/
+*.swp
+*~
+.DS_Store
