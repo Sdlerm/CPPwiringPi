@@ -69,3 +69,7 @@ endif()
 if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/15_imuorientation/CMakeLists.txt")
 	add_subdirectory(15_imuorientation)
 endif()
+
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Reaction_Game/CMakeLists.txt")
+	add_subdirectory(Reaction_Game)
+endif()
