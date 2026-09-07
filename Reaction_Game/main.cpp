@@ -10,16 +10,21 @@ constexpr int LED = 25;
 enum class gameState
 {
     waitingToStart,
+    waitingForRelease,
     waitingForLight,
     waitingForPress,
     winnerShown
 };
 
-int main() 
-{   
-    int winner = 0; //0 means tie, 1 and 2 mean players1/2 win
-    if (wiringPiSetupGpio() == -1) 
+int main()
+{
+    // stdout is a pipe (not a tty) when launched from the VS Code debugger,
+    // so force a flush after every << or no messages appear until exit
+    cout << unitbuf;
+
+    if (wiringPiSetupGpio() == -1)
     {
+        cerr << "wiringPiSetupGpio failed\n";
         return  1;
     }
 
@@ -46,30 +51,43 @@ int main()
 
     unsigned int lightTime = 0;
 
+    cout << "Press both buttons to start.\n";
+
     while (true)
     {
         switch (state)
         {
-        // Calculate the exact future time (in milliseconds) the LED should turn on
         case gameState::waitingToStart:
+            if (digitalRead(BTN1) == LOW && digitalRead(BTN2) == LOW)
+            {
+                cout << "Release both buttons...\n";
+                state = gameState::waitingForRelease;
+            }
+            break;
+
+        // The random timer only starts once both buttons are let go,
+        // otherwise the still-held buttons would trigger "Too early"
+        case gameState::waitingForRelease:
             if (digitalRead(BTN1) == HIGH && digitalRead(BTN2) == HIGH)
             {
                 lightTime = millis() +  waitTime(rng);
-                state = gameState::waitingForLight; 
+                cout << "Get ready... wait for the light!\n";
+                state = gameState::waitingForLight;
             }
             break;
-        
-         // Check if the current time has surpassed the target time
-         //If it has, turn LED on and switch to waitingForPress
-         case gameState::waitingForLight:
-             if (digitalRead(BTN1) == LOW || digitalRead(BTN2) == LOW)
+
+        // Turn the LED on once the random delay has elapsed
+        case gameState::waitingForLight:
+            if (digitalRead(BTN1) == LOW || digitalRead(BTN2) == LOW)
             {
                 cout << "Too early, cheating cunt! Versuchen Sie spater!\n";
+                cout << "Press both buttons to start.\n";
                 state = gameState::waitingToStart;
             }
             else if (millis() >= lightTime)
             {
                 digitalWrite(LED,HIGH);
+                cout << "GO!\n";
                 state = gameState::waitingForPress;
             }
             break;
@@ -80,40 +98,31 @@ int main()
             const bool player2Pressed = digitalRead(BTN2) == LOW;
             if (player1Pressed && player2Pressed)
             {
-                winner = 0;
                 cout << "Tie cocksuckers!\n";
                 state = gameState::winnerShown;
             }
             else if (player1Pressed)
             {
-                winner = 1;
                 cout << "Player1 wins mother fucker!\n";
                 state = gameState::winnerShown;
-
             }
-            else if(player2Pressed)
+            else if (player2Pressed)
             {
-                winner = 2;
                 cout << "Player2 wins mother fucker!\n";
                 state = gameState::winnerShown;
             }
-
-            if (state == gameState::winnerShown)
-            {
-                digitalWrite(LED,LOW);
-            }
-    
             break;
         }
+
         case gameState::winnerShown:
             digitalWrite(LED,LOW);
             delay(2000);
+            cout << "Press both buttons to start.\n";
             state = gameState::waitingToStart;
             break;
-
-        //prevents the program from maxing out a CPU core and gives basic button debounce
-        delay(5);
-
         }
+
+        // prevents the program from maxing out a CPU core and gives basic button debounce
+        delay(5);
     }
 }

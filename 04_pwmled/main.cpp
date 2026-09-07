@@ -1,5 +1,7 @@
 #include <wiringPi.h>
 #include <softPwm.h>
+#include <iostream>
+using namespace std;
 
 constexpr int LED = 18;
 
@@ -14,12 +16,14 @@ int main()
         for (int duty=0;duty<=100;duty++) 
         {
             //set brightness
+            cout << "Ramping  UP: " << duty << "/100\n";
             softPwmWrite(LED,duty);
             delay(15);
         }
 
         for (int duty=100;duty>=0;duty--)
         {
+            cout << "Ramping DOWN: " << duty << "/100\n";
             softPwmWrite(LED,duty);
             delay(15);
         }
