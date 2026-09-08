@@ -3,9 +3,7 @@
 #include <iostream>
 using namespace std;
 
-constexpr int R = 20, G = 18, B =19;
-// constexpr int pins[] = {R,G,B};
-// const char* names[] = {"R (GPIO20)","G (GPIO18)","B (GPIO19)"};
+constexpr int R = 17, G = 27, B =22;
 
 //each 0...100 duty
 struct Color
@@ -29,13 +27,8 @@ int main()
         return 1;
     }
 
-     pinMode(R,OUTPUT);
-     digitalWrite(R,HIGH);
-     pinMode(G,OUTPUT);
-     digitalWrite(G,HIGH);
-     pinMode(B,OUTPUT);
-     digitalWrite(B,HIGH);
-
+    //Creat software PWM threads for each pin: softPwmCreate(pin, initial_value, range)
+    //Initial value = 100 = fully off for common-anode
     softPwmCreate(R,100,100);
     softPwmCreate(G,100,100);
     softPwmCreate(B,100,100);
@@ -43,14 +36,7 @@ int main()
     Color magenta{100,0,100};
     Color cyan{0,100,100};
     Color yellow{100,100,0};
-    Color white {100,100,100};
-
-    //Red:off -->  full brightness
-    // for (int i=0;i<100;i++) 
-    //     {
-    //         show({100-i,0,0});
-    //         delay(20);
-    //     }
+    Color white {100,100,100}
 
     while (true) 
     {
