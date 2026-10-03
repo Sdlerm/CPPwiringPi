@@ -26,6 +26,10 @@ if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/04_pwmled/CMakeLists.txt")
 	add_subdirectory(04_pwmled)
 endif()
 
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/045_potdiv/CMakeLists.txt")
+	add_subdirectory(045_potdiv)
+endif()
+
 # if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/05_servo/CMakeLists.txt")
 # 	add_subdirectory(05_servo)
 # endif()

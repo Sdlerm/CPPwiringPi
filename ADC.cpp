@@ -1,38 +1,50 @@
 /**********************************************************************
 * Filename    : ADC.cpp
 * Description : Use ADC module to read the voltage value of potentiometer.
-* Author      : www.freenove.com
-* modification: 2020/03/06
 **********************************************************************/
 #include <wiringPi.h>
-#include <stdio.h>
-#include <ADCDevice.hpp>
+#include <wiringPiI2C.h>
+#include <cstdio>
+#include <memory>
+#include "ADCDevice.h"
 
-ADCDevice *adc;  // Define an ADC Device class object
+// ADS7830: 8-bit, 8-channel I2C ADC
+class ADS7830 : public ADCDevice {
+public:
+    explicit ADS7830(int address = 0x4b) : ADCDevice(8, 3.3f), m_address(address) {}
+    ~ADS7830() override = default;
+
+    bool init() override {
+        m_fd = wiringPiI2CSetup(m_address);
+        return m_fd >= 0;
+    }
+
+    uint32_t readRaw(uint8_t channel) override {
+        // Single-ended input select bits, internal reference off, ADC on
+        uint8_t cmd = 0x84 | (((channel << 2 | channel >> 1) & 0x07) << 4);
+        wiringPiI2CReadReg8(m_fd, cmd);        // dummy read to start conversion
+        return wiringPiI2CReadReg8(m_fd, cmd);
+    }
+
+private:
+    int m_address;
+    int m_fd = -1;
+};
 
 int main(void){
-    adc = new ADCDevice();
     printf("Program is starting ... \n");
-    
-    if(adc->detectI2C(0x48)){    // Detect the pcf8591.
-        delete adc;                // Free previously pointed memory
-        adc = new PCF8591();    // If detected, create an instance of PCF8591.
-    }
-    else if(adc->detectI2C(0x4b)){// Detect the ads7830
-        delete adc;               // Free previously pointed memory
-        adc = new ADS7830();      // If detected, create an instance of ADS7830.
-    }
-    else{
+    std::unique_ptr<ADCDevice> adc = std::make_unique<ADS7830>(0x4b);
+    if(!adc->init()){
         printf("No correct I2C address found, \n"
         "Please use command 'i2cdetect -y 1' to check the I2C address! \n"
         "Program Exit. \n");
         return -1;
     }
-    
+
     while(1){
-        int adcValue = adc->analogRead(0);    //read analog value of A0 pin
-        float voltage = (float)adcValue / 255.0 * 3.3;  // Calculate voltage
-        printf("ADC value : %d  ,\tVoltage : %.2fV\n",adcValue,voltage);
+        uint32_t adcValue = adc->readRaw(0);
+        float voltage = adc->readVoltage(0);
+        printf("ADC value : %u  ,\tVoltage : %.2fV\n", adcValue, voltage);
         delay(100);
     }
     return 0;
