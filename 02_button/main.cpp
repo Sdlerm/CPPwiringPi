@@ -1,7 +1,7 @@
 #include <wiringPi.h>
 #include <iostream>
 
-constexpr int BTN=2;
+constexpr int BTN=26;
 
 int main() {
     if (wiringPiSetupGpio() == -1) {

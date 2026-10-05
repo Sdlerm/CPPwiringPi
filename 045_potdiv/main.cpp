@@ -1,10 +1,40 @@
+#if __has_include(<wiringPiI2C.h>)
 #include <wiringPiI2C.h>
+#elif __has_include(<wiringPi/wiringPiI2C.h>)
+#include <wiringPi/wiringPiI2C.h>
+#else
+#error "WiringPi I2C header not found; install WiringPi and configure the compiler include path"
+#endif
+#if __has_include(<wiringPi.h>)
 #include <wiringPi.h>
+#elif __has_include(<wiringPi/wiringPi.h>)
+#include <wiringPi/wiringPi.h>
+#else
+#error "WiringPi header not found; install WiringPi and configure the compiler include path"
+#endif
 #include <unistd.h>
 #include <cstdint>
 #include <iostream>
+#if __has_include(<sqlite3.h>)
 #include <sqlite3.h>
+#elif __has_include("/usr/include/sqlite3.h")
+#include "/usr/include/sqlite3.h"
+#elif __has_include("/usr/local/include/sqlite3.h")
+#include "/usr/local/include/sqlite3.h"
+#elif __has_include("/usr/include/x86_64-linux-gnu/sqlite3.h")
+#include "/usr/include/x86_64-linux-gnu/sqlite3.h"
+#elif __has_include("/usr/include/aarch64-linux-gnu/sqlite3.h")
+#include "/usr/include/aarch64-linux-gnu/sqlite3.h"
+#elif __has_include("/usr/include/arm-linux-gnueabihf/sqlite3.h")
+#include "/usr/include/arm-linux-gnueabihf/sqlite3.h"
+#elif __has_include(<sqlite3/sqlite3.h>)
+#include <sqlite3/sqlite3.h>
+#else
+#error "SQLite header not found; install SQLite development headers and configure the compiler include path"
+#endif
 #include <string>
+
+sqlite3* db = nullptr;
 
 class I2C 
 {
@@ -74,7 +104,6 @@ int main(int argc, char* argv[]) {
     }
 
     // 3. Open SQLite Database
-    sqlite3* db = nullptr;
     if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK) {
         std::cerr << "[DB ERROR] Cannot open database: " << sqlite3_errmsg(db) << std::endl;
         return 1;
