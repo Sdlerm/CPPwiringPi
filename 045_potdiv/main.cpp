@@ -30,7 +30,7 @@
 #elif __has_include(<sqlite3/sqlite3.h>)
 #include <sqlite3/sqlite3.h>
 #else
-#error "SQLite header not found; install SQLite development headers and configure the compiler include path"
+#error "SQLite header not found; run 'sudo apt install libsqlite3-dev', add its include path (e.g. -I/usr/include), and link with -lsqlite3"
 #endif
 #include <string>
 
